@@ -1,0 +1,21 @@
+{
+  "resultCount": 50,
+  "results": [
+    {
+      "kind": "song",
+      "collectionId": 1,
+      "trackId": 1,
+      "trackPrice": 2.0,
+      "trackTimeMillis": 200
+    },
+    {
+      "kind": "song",
+      "collectionId": 2,
+      "trackId": 2,
+      "trackPrice": 3.0,
+      "trackTimeMillis": 300
+    }
+  ]
+}
+
+
