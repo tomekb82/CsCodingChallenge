@@ -31,18 +31,8 @@ public class JsonProcessing implements IJsonProcessing {
                                            Function<JSONObject, Track> value,
                                            Consumer<Map.Entry<String, Track>> printInDebugMode) {
         checkInputParams(filename, key, value);
-
-        Map<String, Track> tracks;
         File track = getFileReader.apply(filename);
-        JSONParser parser = new JSONParser();
-        try (Reader is = new FileReader(track)) {
-            JSONObject jsonObject = (JSONObject) parser.parse(is);
-            JSONArray jsonArray = (JSONArray) jsonObject.get(RESULTS);
-            tracks = (Map<String, Track>) jsonArray.stream().collect(
-                    Collectors.toMap(key, value));
-        } catch (IOException | ParseException e) {
-            throw new RuntimeException(ErrorMessage.FILE_NOT_EXIST.value(), e);
-        }
+        Map<String, Track> tracks = parseJsonFile(key, value, track);
 
         if(isDebugMode() && printInDebugMode!= null) {
             tracks.entrySet().stream().forEach(printInDebugMode);
@@ -51,7 +41,7 @@ public class JsonProcessing implements IJsonProcessing {
         return tracks;
     }
 
-    private void checkInputParams(String filename,
+    protected void checkInputParams(String filename,
                                   Function<JSONObject, Long> key,
                                   Function<JSONObject, Track> value){
         if(!filename.endsWith(JSON_FILE_FORMAT)){
@@ -61,6 +51,20 @@ public class JsonProcessing implements IJsonProcessing {
         if(key == null || value == null){
             throw new RuntimeException(ErrorMessage.PARAMETER_REQUIRED.toString());
         }
+    }
+
+    protected Map<String, Track> parseJsonFile(Function<JSONObject, Long> key, Function<JSONObject, Track> value, File track) {
+        Map<String, Track> tracks;
+        JSONParser parser = new JSONParser();
+        try (Reader is = new FileReader(track)) {
+            JSONObject jsonObject = (JSONObject) parser.parse(is);
+            JSONArray jsonArray = (JSONArray) jsonObject.get(RESULTS);
+            tracks = (Map<String, Track>) jsonArray.stream().collect(
+                    Collectors.toMap(key, value));
+        } catch (IOException | ParseException e) {
+            throw new RuntimeException(ErrorMessage.FILE_NOT_EXIST.value(), e);
+        }
+        return tracks;
     }
 
     /**
